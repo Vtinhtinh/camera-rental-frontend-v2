@@ -7,10 +7,14 @@ const GoogleSuccess = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const hasRun = useRef(false);
+  const [mounted, setMounted] = useState(false);
   const [error, setError] = useState(null);
   const [loadingText, setLoadingText] = useState('Đang xác minh...');
 
   useEffect(() => {
+    setMounted(true);
+    setLoadingText('Đang đăng nhập...');
+
     if (hasRun.current) return;
     hasRun.current = true;
 
@@ -40,6 +44,18 @@ const GoogleSuccess = () => {
 
     processAuth();
   }, [navigate]);
+
+  // Prevent hydration mismatch by only rendering after mount
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400 text-lg">Đang xác minh...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center">

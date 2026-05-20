@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://camera-rental-backend-v2-1.onrender.com/api/:path*" },
+    { "source": "/sse/:path*", "destination": "https://camera-rental-backend-v2-1.onrender.com/sse/:path*" }
+  ]
+}

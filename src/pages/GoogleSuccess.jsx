@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/endpoints';
 
 const GoogleSuccess = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { loginWithToken } = useAuth();
+  const { login } = useAuth();
   const hasRun = useRef(false);
   const [error, setError] = useState(null);
   const [loadingText, setLoadingText] = useState('Đang xác minh...');
@@ -15,44 +14,32 @@ const GoogleSuccess = () => {
     if (hasRun.current) return;
     hasRun.current = true;
 
-    const token = searchParams.get('token');
-    const userId = searchParams.get('userId');
-
-    if (!token || !userId) {
-      console.error('Missing token or userId in URL');
-      setError('Thiếu thông tin xác minh từ Google');
-      setTimeout(() => navigate('/login?error=google_auth_failed'), 2000);
-      return;
-    }
-
-    const fetchUser = async () => {
+    const processAuth = async () => {
       try {
         setLoadingText('Đang đăng nhập...');
-        localStorage.setItem('token', token);
+
+        // Backend đã set cookie HTTP-only, gọi /auth/me để lấy user info
         const response = await authApi.getMe();
-        // Response structure after axios interceptor: { success: true, data: { user } }
         const userData = response?.data?.user;
 
         if (userData) {
+          // Lưu vào localStorage để AuthContext nhận biết
           localStorage.setItem('user', JSON.stringify(userData));
-          window.dispatchEvent(new Event('storage'));
           setLoadingText('Đăng nhập thành công!');
-          setTimeout(() => navigate('/'), 1000);
+          // Reload để AuthContext init với cookie
+          window.location.href = '/';
         } else {
-          console.error('Invalid response:', response);
           throw new Error('Không nhận được dữ liệu người dùng');
         }
       } catch (error) {
-        console.error('Google auth fetch user error:', error);
+        console.error('Google auth error:', error);
         setError(error.message || 'Đăng nhập Google thất bại');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
         setTimeout(() => navigate('/login?error=google_auth_failed'), 3000);
       }
     };
 
-    fetchUser();
-  }, [searchParams, navigate]);
+    processAuth();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center">

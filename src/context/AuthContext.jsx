@@ -27,8 +27,8 @@ export const AuthProvider = ({ children }) => {
           setUser(JSON.parse(storedUser));
 
           const response = await authApi.getMe();
-          // Response: { success: true, data: { user } }
-          const userData = response?.data?.user || response?.user;
+          // Response after axios interceptor: { success: true, data: { user } }
+          const userData = response?.data?.user;
           if (userData) {
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
@@ -49,9 +49,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await authApi.login({ email, password });
-    // Response: { success: true, data: { user, token } }
-    const userData = response?.data?.user || response?.user;
-    const newToken = response?.data?.token || response?.token;
+    // Response after axios interceptor: { success: true, data: { user, token } }
+    const userData = response?.data?.user;
+    const newToken = response?.data?.token;
 
     if (userData && newToken) {
       setUser(userData);
@@ -83,8 +83,9 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (data) => {
     const response = await authApi.register(data);
-    const userData = response?.data?.user || response?.user;
-    const newToken = response?.data?.token || response?.token;
+    // Response after axios interceptor: { success: true, data: { user, token } }
+    const userData = response?.data?.user;
+    const newToken = response?.data?.token;
 
     if (userData && newToken) {
       setUser(userData);

@@ -30,8 +30,8 @@ const GoogleSuccess = () => {
         setLoadingText('Đang đăng nhập...');
         localStorage.setItem('token', token);
         const response = await authApi.getMe();
-        // Response structure: { success: true, data: { user } }
-        const userData = response?.data?.user || response?.user;
+        // Response structure after axios interceptor: { success: true, data: { user } }
+        const userData = response?.data?.user;
 
         if (userData) {
           localStorage.setItem('user', JSON.stringify(userData));

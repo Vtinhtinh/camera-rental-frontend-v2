@@ -1,14 +1,7 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    }
-  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://camera-rental-backend-v2-1.onrender.com/api/$1" },
     { "source": "/sse/(.*)", "destination": "https://camera-rental-backend-v2-1.onrender.com/sse/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ]
 }
